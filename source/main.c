@@ -20,7 +20,7 @@ int main(){
 	  timerEnable(1);
 		configureLeds();
 		while(1){
-			if(globalVAR1>=44100){
+			if(globalVAR1>=12000){// sample origin 44100
 				 GPIOF->DATA^=0xE;
 				 globalVAR1=0;
 			}
@@ -66,7 +66,7 @@ void timerConfig(void){
 	  TIMER0->CFG=0x4;// a/b 16 bit mode 
 	  TIMER0->TAMR=(0x0<<4)|(0x02);//TAM as periodic timer/ down timer
 	  TIMER0->TAILR=1023;//set top value as 1023
-	  TIMER0->CTL=(0x1<<1);//Enable debug stall
+		TIMER0->CTL=(0x1<<1)|(0x1<<5);//Enable debug stall
 }
 
 void timerIRQConfig(unsigned int enable){
