@@ -1,12 +1,11 @@
-#include "TM4C123.h"                    // Device header
-
+#include "adc.h"  
 void config_ADC(void);
 void start_ADC(void);
 
 int ADC_samples[4];
 int ADC_sampleOk=0;
 int ADC_sampleEnd=1;
-int a=0;
+
 
 /*
 int main(){

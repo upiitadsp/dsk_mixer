@@ -1,4 +1,4 @@
-#include "TM4C123.h"                    // Device header
+#include "timer.h"
 
 void timerConfig(void);
 void set_timer(unsigned int, unsigned char);
@@ -9,9 +9,6 @@ volatile int globalVAR1;
 volatile int iterationMax;
 volatile int loopActive;
 
-float a=1;
-float b=1.5;
-float c=0;
 /*
 int main(){
 		int iterationIndex;

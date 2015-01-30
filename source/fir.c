@@ -1,3 +1,4 @@
+#include "fir.h"
 #define FIR_ORDER 4
 
 const float h_coff[FIR_ORDER]={1.25,1.0,0.36,1.44};
