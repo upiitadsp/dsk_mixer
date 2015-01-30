@@ -7,5 +7,5 @@ void timerIRQConfig(unsigned int);
 void timerEnable(unsigned int);
 void ledsInit(void);
 
-extern int timer_eventCounter;
+extern volatile int timer_eventCounter;
 #endif

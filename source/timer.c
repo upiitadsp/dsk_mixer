@@ -1,6 +1,6 @@
 #include "timer.h"
 
-int timer_eventCounter;
+volatile int timer_eventCounter;
 
 void ledsInit(){
 		SYSCTL->RCGCGPIO|=(0x1<<5);//Enable GPIOF
