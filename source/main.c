@@ -28,6 +28,7 @@ const float filter_coeff[64] = {
 int main(){
 	fir_init(filter_coeff);
 	adc_config();
+	dac_init();
 	timerInit();
 	timerSet(2000,0);//interrupt every (0+1)*2000 counts 
 	timerIRQConfig(1);
@@ -60,7 +61,10 @@ void ADC0SS0_Handler(){
 }
 
 void PendSV_Handler(void){
+	unsigned short dac_val;
 	volt_in=((((float)adc_sample)*(2.0f/4095.0f))-1.0f);
 	volt_out=fir_filter(volt_in);
+	dac_val=(unsigned short) ((volt_out+(1.25f))*(4095.0f/2.5f));
+	dac_output(dac_val);
 	pendSV_eventCounter++;
 }
