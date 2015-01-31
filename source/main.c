@@ -2,6 +2,7 @@
 #include "fir.h"
 #include "timer.h"
 #include "adc.h"
+#include "dac.h"
 volatile int adc_eventCounter;
 volatile int pendSV_eventCounter;
 volatile int error_fatal=0;
