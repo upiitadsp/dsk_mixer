@@ -183,7 +183,17 @@
 // Set the following value to 1 to use the RCC2 register.  The RCC2 register
 // overrides some of the fields in the RCC register if it is used.
 //
-#define CFG_RCC2_USERCC2 0
+#define CFG_RCC2_USERCC2 1
+
+//      <q> DIV400: Divide PLL as 400 MHz
+//          <i> This bit, along with the SYSDIV2LSB bit, allows additional frequency
+//          <i> choices, Append the SYSDIV2LSB bit to the SYSDIV2 field to create  a
+//          <i> 7 bit divisor using the 400 MHz PLL output.
+//
+// Set the following value to 1 to use the RCC2 register.  The RCC2 register
+// overrides some of the fields in the RCC register if it is used.
+//
+#define CFG_RCC_DIV400 1
 
 //      <o> SYSDIV2: System Clock Divisor <2-64>
 //          <i> Specifies the divisor used to generate the system clock from
@@ -192,7 +202,19 @@
 // The following value is the system clock divisor.  This will be applied if
 // USESYSDIV in RCC is enabled.  The valid range of dividers is 2-64.
 //
-#define CFG_RCC_SYSDIV2 4
+#define CFG_RCC_SYSDIV2 3
+
+//      <q> SYSDIV2LSB: Additional LSB for SYSDIV2
+//          <i> When DIV400 is set, this bit becomes the LSB of SYSDIV2. If DIV400
+//          <i> is clear, this bit is not used
+//					<i> This bit can only be set or cleared when DIV400 is set.
+//
+// If the following value is 1, then the PLL is powered down.  Keep this value
+// as 1 if you do not need to use the PLL.  In this case, BYPASS2 (see below)
+// must also be set to 1.  If you are using the PLL, then this value must be
+// set to 0.
+//
+#define CFG_RCC_SYSDIV2LSB 0
 
 //      <q> PWRDN2: Power Down PLL
 //          <i> Check this box to disable the PLL.  You must also choose
@@ -254,7 +276,9 @@
 #define RCC2_Val                                                              \
 (                                                                             \
     (CFG_RCC2_USERCC2      << 31) |                                           \
+    (CFG_RCC_DIV400        << 30) |                                           \
     ((CFG_RCC_SYSDIV2 - 1)  << 23) |                                          \
+    (CFG_RCC_SYSDIV2LSB     << 22) |                                          \
     (CFG_RCC_PWRDN2         << 13) |                                          \
     (CFG_RCC_BYPASS2        << 11) |                                          \
     (CFG_RCC_OSCSRC2        << 4)\
@@ -335,10 +359,14 @@
       #define __CORE_CLK_PRE   PLL_CLK
     #endif
     #if (RCC_Val & (1UL<<22))                            /* check USESYSDIV */
-      #if (RCC2_Val & (1UL<<11))
+      #if (RCC2_Val & (1UL<<11))                         /* check BYPASS */
         #define __CORE_CLK  (__CORE_CLK_PRE / (((RCC2_Val>>23) & (0x3F)) + 1))
       #else
-        #define __CORE_CLK  (__CORE_CLK_PRE / (((RCC2_Val>>23) & (0x3F)) + 1) / 2)
+				#if (RCC2_Val & (1UL<<30))		/* check DIV400 */
+					#define __CORE_CLK  (__CORE_CLK_PRE / (((RCC2_Val>>22) & (0x7F)) + 1))
+				#else
+					#define __CORE_CLK  (__CORE_CLK_PRE / (((RCC2_Val>>23) & (0x3F)) + 1) / 2)
+				#endif
       #endif
     #else
       #define __CORE_CLK  __CORE_CLK_PRE
@@ -539,7 +567,11 @@ void SystemCoreClockUpdate (void)            /* Get Core Clock Frequency      */
         if (rcc2 & (1UL<<11)) {
           SystemCoreClock = SystemCoreClock / (((rcc2>>23) & (0x3F)) + 1);
         } else {
-          SystemCoreClock = SystemCoreClock / (((rcc2>>23) & (0x3F)) + 1) / 2;
+					if(rcc2 & (1UL<<30)){                         /*check DIV400 */
+						SystemCoreClock = SystemCoreClock / (((rcc2>>22) & (0x7F)) + 1);
+					}else{
+						SystemCoreClock = SystemCoreClock / (((rcc2>>23) & (0x3F)) + 1) / 2;
+					}
         }
       }
     } else {
