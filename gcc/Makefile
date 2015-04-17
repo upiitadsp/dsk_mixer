@@ -9,7 +9,7 @@ ASM_FILES:= startup_ARMCM4.S
 INCLUDE_FLAGS:=$(patsubst %,-I%,$(INCLUDE_DIRS)) 
 TCHIP=TM4C123GH6PM
 CC=arm-none-eabi-gcc
-CFLAGS=-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=c99
+CFLAGS=-mthumb -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -std=c99 -g
 CPPFLAGS= $(INCLUDE_FLAGS) -D$(TCHIP)
 vpath %.h $(INCLUDE_DIRS)
 vpath %.c $(SOURCE_DIRS)
@@ -37,5 +37,15 @@ clean:
 	rm -fr objects
 rebuild: clean all
 burn: salida.elf
-	openocd -fboard/ek-tm4c123gxl.cfg -c"init" -c"reset" -c"sleep 300" -c"reset halt" -c"sleep 300" -c"flash write_image erase salida.elf 0x00 elf" -c"reset" -c"shutdown"
-
+	/usr/bin/openocd -fboard/ek-tm4c123gxl.cfg -c"init" -c"reset" -c"sleep 300" -c"reset halt" -c"sleep 300" -c"flash write_image erase salida.elf 0x00 elf" -c"reset" -c"shutdown"
+debug: salida.elf
+	/usr/bin/openocd -fboard/ek-tm4c123gxl.cfg &
+	sleep 1 ;
+	! echo "reset" | telnet localhost 4444 &> /dev/null ;
+	! echo "reset halt" | telnet localhost 4444 &> /dev/null ;
+	sleep 0.5 ;
+	arm-none-eabi-gdb --tui --eval-command="target remote localhost:3333" salida.elf ;
+	! echo "reset" | telnet localhost 4444 &> /dev/null;
+	sleep 0.5 ;
+	! echo "shutdown" | telnet localhost 4444 &> /dev/null;
+	sleep 0.1 ;
