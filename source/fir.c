@@ -1,25 +1,25 @@
 #include "fir.h"
 #define FIR_ORDER 64
 
-float h_fir0[(FIR_ORDER*2)];
-float h_fir1[(FIR_ORDER*2)];
-float h_fir2[(FIR_ORDER*2)];
-float h_fir3[(FIR_ORDER*2)];
-float h_fir4[(FIR_ORDER*2)];
+float h_fir_0[(FIR_ORDER*2)];
+float h_fir_1[(FIR_ORDER*2)];
+float h_fir_2[(FIR_ORDER*2)];
+float h_fir_3[(FIR_ORDER*2)];
+float h_fir_4[(FIR_ORDER*2)];
 
-int headPointer = 0;
+int head_pointer = 0;
 
-float *h_response0;
-float *h_response1;
-float *h_response2;
-float *h_response3;
-float *h_response4;
+float *h_response_0;
+float *h_response_1;
+float *h_response_2;
+float *h_response_3;
+float *h_response_4;
 
-float *center_pointer0;
-float *center_pointer1;
-float *center_pointer2;
-float *center_pointer3;
-float *center_pointer4;
+float *center_pointer_0;
+float *center_pointer_1;
+float *center_pointer_2;
+float *center_pointer_3;
+float *center_pointer_4;
 
 float gain_0 = 1;
 float gain_1 = 1;
@@ -71,13 +71,13 @@ float fir_filter(float new_sample){
     float accumulator_4 = 0;
     float y_out = 0;
 
-    x_fir[headPointer] = new_sample;
+    x_fir[head_pointer] = new_sample;
 
-    h_response_0 = center_pointer_0 - headPointer;
-    h_response_1 = center_pointer_1 - headPointer;
-    h_response_2 = center_pointer_2 - headPointer;
-    h_response_3 = center_pointer_3 - headPointer;
-    h_response_4 = center_pointer_4 - headPointer;
+    h_response_0 = center_pointer_0 - head_pointer;
+    h_response_1 = center_pointer_1 - head_pointer;
+    h_response_2 = center_pointer_2 - head_pointer;
+    h_response_3 = center_pointer_3 - head_pointer;
+    h_response_4 = center_pointer_4 - head_pointer;
 
     for(int i=0;i<FIR_ORDER;i++){
         accumulator_0 += x_fir[i] * h_response_0[i];
@@ -93,7 +93,7 @@ float fir_filter(float new_sample){
     y_out += accumulator_3 * gain_3;
     y_out += accumulator_4 * gain_4;
 
-    headPointer++;
-    headPointer &= (FIR_ORDER-1);
+    head_pointer++;
+    head_pointer &= (FIR_ORDER-1);
     return y_out;
 }
