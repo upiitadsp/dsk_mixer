@@ -11,4 +11,4 @@ extern const float banda4[64];
 
 extern const float banda5[64];
 
-#endif// _KERNELS_H
+#endif
