@@ -3,7 +3,7 @@
 //Grupo: 3MM5
 //Nombres: Bejarano Montiel Omar
          //Enriquez Ramirez Oscar
-         //Villaseñor Hernandez Carlos
+         //VillaseÃ±or Hernandez Carlos
 
 #include "dsk6713.h"
 #include "dsk6713_aic23.h"
@@ -19,8 +19,8 @@ DSK6713_AIC23_CodecHandle manejador;
 DSK6713_AIC23_Config configuracion = DSK6713_AIC23_DEFAULTCONFIG;
 
 void codec_init(void);
-Uint32 codec_read(void);
-void codec_write(Uint32 output_data);
+int32 codec_read(void);
+void codec_write(int32 output_data);
 #define OUTPUT_GAIN 1
 
 void leds_output(short led_state);
@@ -29,7 +29,7 @@ void leds_output(short led_state);
 
 int main(){
     float input_data;
-    float output_data;
+    int32 output_data;
     //Configure hardware
     codec_init();
     fir_init(banda1,banda2,banda3,banda4,banda5);
@@ -43,7 +43,7 @@ int main(){
             while(DSK6713_DIP_get(3)==0){
                 input_data = codec_read();
                 output_data = fir_filter(input_data);
-                codec_write(output_data * OUTPUT_GAIN);
+                codec_write(output_data);
             }
         }
         //Waiting
@@ -61,13 +61,13 @@ void codec_init(void){
 
 }
 
-Uint32 codec_input_data;
-Uint32 codec_read(void){
+int32 codec_input_data;
+int32 codec_read(void){
     while(!(DSK6713_AIC23_read(manejador, &codec_input_data)));
     return codec_input_data;
 }
 
-void codec_write(Uint32 output_data){
+void codec_write(int32 output_data){
     while(!(DSK6713_AIC23_write(manejador,output_data)));
 }
 
